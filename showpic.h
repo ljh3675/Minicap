@@ -23,7 +23,7 @@ typedef struct
 	uint32_t VHeight;
 	unsigned char Orientation;
 	unsigned char Bitflags;
-};
+}HeadInfo;
 // °üÍ·
 typedef struct
 {
