@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <databuffer.h>
 #include <QtNetwork/QtNetwork>
+#include <QTextBrowser>
 
 // 头信息宏定义
 
@@ -56,6 +57,7 @@ public:
 
 private slots:
     void on_pushButton_connect_clicked();
+	void on_pushButton_save_clicked();
 
 private:
     Ui::showpic *ui;
