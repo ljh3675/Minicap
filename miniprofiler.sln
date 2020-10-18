@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1209
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "miniprofiler", "miniprofiler.vcxproj", "{06656FD9-A4B9-3CE1-A703-F17DE7E6E1A6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{06656FD9-A4B9-3CE1-A703-F17DE7E6E1A6}.Debug|x64.ActiveCfg = Debug|x64
+		{06656FD9-A4B9-3CE1-A703-F17DE7E6E1A6}.Debug|x64.Build.0 = Debug|x64
+		{06656FD9-A4B9-3CE1-A703-F17DE7E6E1A6}.Release|x64.ActiveCfg = Release|x64
+		{06656FD9-A4B9-3CE1-A703-F17DE7E6E1A6}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BE95D8F3-2F69-4008-A1D3-2572B9C9CBD6}
+	EndGlobalSection
+EndGlobal
