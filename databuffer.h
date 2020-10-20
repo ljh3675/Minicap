@@ -11,7 +11,7 @@ public:
 	bool reBufferSize(int nLen); //调整缓冲区大小
 	bool addMsg(char *pBuf, int nLen);  //添加消息到缓冲区
 	void reset();          //缓冲区复位
-	void poll(int nLen);   //移除缓冲区首部的第一个数据包
+	void deleteFirst(int nLen);   //移除缓冲区首部的第一个数据包
 
 public:
 	DataBuffer();

@@ -83,7 +83,7 @@ void DataBuffer::reset()
 
 //移除缓冲区首部第一个数据包
 //nLen：一个数据包的大小
-void DataBuffer::poll(int nLen)
+void DataBuffer::deleteFirst(int nLen)
 {
 	if (m_nOffset == 0 || m_pBuffer == NULL)
 		return;
