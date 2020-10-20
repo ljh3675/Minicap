@@ -60,7 +60,6 @@ public:
     ~showpic();
 
 public:
-	void packData(unsigned char *data, int nLen);
 	void unpackData(unsigned char *data, int nLen);
 
 private slots:
@@ -78,6 +77,5 @@ private:
 	DataBuffer m_Buffer; // 套接字关联的缓冲区
 	QProcess *servercmd = nullptr;
 	FirstHeader header;
-
 };
 #endif // SHOWPIC_H

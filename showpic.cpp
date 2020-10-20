@@ -24,23 +24,6 @@ showpic::~showpic()
 	}
 }
 
-//封包，发送
-//data: 要发送的数据
-//nLen: 要发送数据的长度
-void showpic::packData(unsigned char * data, int nLen)
-{
-	//Packet p;
-	//int headLen = sizeof(PacketHead);         //包头大小
-	//p.head.nLen = nLen;                       //包体大小
-	//char *buf = new char[headLen + nLen];
-	//memcpy(buf, &p.head, headLen);            //包头
-	//memcpy(buf + headLen, data, nLen);        //包体
-	//if (m_tcpSocket != NULL)
-	//	m_tcpSocket->write(buf, headLen + nLen);  //发包
-	//else
-	//	qDebug() << "socket 未建立！";
-}
-
 //解包
 //data: 要发送的数据
 //nLen: 要发送数据的长度
@@ -246,7 +229,7 @@ void showpic::on_pushButton_startsever_clicked()
 		if (sdkversion.compare(sofileInfo->at(i).fileName()) == 0)
 		{
 			// push minicap.so
-			ui->textBrowser_server->append("adb push " + minicapso + "/" + sdkversion + "/" + abiversion + "/minicap.so" + " data/local/tmp");
+			//ui->textBrowser_server->append("adb push " + minicapso + "/" + sdkversion + "/" + abiversion + "/minicap.so" + " data/local/tmp");
 			p.start("adb push " + minicapso + "/" + sdkversion + "/" + abiversion + "/minicap.so" + " data/local/tmp");
 			p.waitForStarted();
 			p.waitForFinished();
@@ -267,14 +250,13 @@ void showpic::on_pushButton_startsever_clicked()
 		if (abiversion.compare(exefileInfo->at(i).fileName()) == 0)
 		{
 			// push minicap
-			ui->textBrowser_server->append("adb push " + minicap + "/" + abiversion + "/minicap" + " data/local/tmp");
+			//ui->textBrowser_server->append("adb push " + minicap + "/" + abiversion + "/minicap" + " data/local/tmp");
 			p.start("adb push " + minicap + "/" + abiversion + "/minicap" + " data/local/tmp");
 			p.waitForStarted();
 			p.waitForFinished();
 			ui->textBrowser_server->append(QString::fromLocal8Bit(p.readAllStandardOutput()));
 		}
 	}
-
 	// 给予minicap chmod权限
 	p.start("adb shell chmod 777 /data/local/tmp/minicap");
 	p.waitForStarted();
@@ -289,12 +271,9 @@ void showpic::on_pushButton_startsever_clicked()
 	servercmd = new QProcess(this);
 	connect(servercmd, SIGNAL(readyReadStandardOutput()), this, SLOT(on_readoutput()));
 	connect(servercmd, SIGNAL(readyReadStandardOutput()), this, SLOT(on_readerror()));
-	servercmd->start("adb shell LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P 720x1440@720x1440/0 -t"); // 启动指令
+	servercmd->start("adb shell LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P 720x1440@720x1440/0"); // 启动指令
 	servercmd->waitForStarted();
-
 }
-
-
 // cmd输出行
 void showpic::on_readoutput()
 {
