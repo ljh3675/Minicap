@@ -21,28 +21,28 @@
 #pragma pack(push,1) // 采用1字节对齐方式
 
 // 头结构体
-typedef struct 
+typedef struct
 {
-	unsigned char Version;
-	unsigned char SizeHeader;
-	uint32_t Pid;
-	uint32_t RWidth;
-	uint32_t RHeight;
-	uint32_t VWidth;
-	uint32_t VHeight;
-	unsigned char DOrientation;
-	unsigned char QBitflags;
+    unsigned char Version;
+    unsigned char SizeHeader;
+    uint32_t Pid;
+    uint32_t RWidth;
+    uint32_t RHeight;
+    uint32_t VWidth;
+    uint32_t VHeight;
+    unsigned char DOrientation;
+    unsigned char QBitflags;
 }FirstHeader;
 // 包头
 typedef struct
 {
-	uint32_t nLen; // 包头
+    uint32_t nLen; // 包头
 }PacketHead;
 // 一包数据
-typedef struct 
+typedef struct
 {
-	PacketHead head; // 包头
-	unsigned char *body; // 包体
+    PacketHead head; // 包头
+    unsigned char *body; // 包体
 }Packet;
 
 #pragma pack(pop)
@@ -60,22 +60,22 @@ public:
     ~showpic();
 
 public:
-	void unpackData(unsigned char *data, int nLen);
+    void unpackData(unsigned char *data, int nLen);
 
 private slots:
 
-	void on_pushButton_startsever_clicked();
-	void on_pushButton_connect_clicked();
-	void on_readoutput();
-	void on_readerror();
-	void readClient();
-	void onConnected();
+    void on_pushButton_startsever_clicked();
+    void on_pushButton_connect_clicked();
+    void on_readoutput();
+    void on_readerror();
+    void readClient();
+    void onConnected();
 
 private:
     Ui::showpic *ui;
-	QTcpSocket *visualTcpSocket; // 通信套接字
-	DataBuffer m_Buffer; // 套接字关联的缓冲区
-	QProcess *servercmd = nullptr;
-	FirstHeader header;
+    QTcpSocket *visualTcpSocket; // 通信套接字
+    DataBuffer m_Buffer; // 套接字关联的缓冲区
+    QProcess *servercmd = nullptr;
+    FirstHeader header;
 };
 #endif // SHOWPIC_H
