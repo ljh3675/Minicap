@@ -55,7 +55,7 @@ bool DataBuffer::reBufferSize(int nLen)
  * nLen，数据长度
  * 成功返回true，失败返回false
  */
-bool DataBuffer::addMsg(char *pBuf, int nLen)
+bool DataBuffer::addMsg(const char *pBuf, int nLen)
 {
     try
     {

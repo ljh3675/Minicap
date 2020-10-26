@@ -9,7 +9,7 @@ public:
 
     int getDataLen();         //获得缓冲区中数据大小
     bool reBufferSize(int nLen); //调整缓冲区大小
-    bool addMsg(char *pBuf, int nLen);  //添加消息到缓冲区
+    bool addMsg(const char *pBuf, int nLen);  //添加消息到缓冲区
     void reset();          //缓冲区复位
     void deleteFirst(int nLen);   //移除缓冲区首部的第一个数据包
 

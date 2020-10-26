@@ -61,6 +61,7 @@ public:
 
 public:
     void unpackData(unsigned char *data, int nLen);
+    //void unpackData(std::string &data, int nLen);
 
 private slots:
 

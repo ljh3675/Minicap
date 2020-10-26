@@ -17,14 +17,16 @@ showpic::showpic(QWidget *parent)
 
 showpic::~showpic()
 {
-    delete ui;
+    servercmd->terminate();
+    servercmd->waitForFinished();
     servercmd = nullptr;
+    delete ui;
 }
 
 //解包
 //data: 要发送的数据
 //nLen: 要发送数据的长度
-void showpic::unpackData(unsigned char * data, int nLen)
+void showpic::unpackData(unsigned char *data, int nLen)
 {
     m_Buffer.addMsg((char *)data, nLen);              //添加数据到缓冲区
     int totalLen = m_Buffer.getDataLen();  //缓冲区中数据大小
@@ -39,15 +41,15 @@ void showpic::unpackData(unsigned char * data, int nLen)
                 QMessageBox::information(NULL, "title", "totalLen<firsthheadlen");
                 break;
             }
-            memcpy(&header.Version, m_Buffer.m_pBuffer + HEAD_VERSION, sizeof(unsigned char));
-            memcpy(&header.SizeHeader, m_Buffer.m_pBuffer + HEAD_SIZEHEADER, sizeof(unsigned char));
-            memcpy(&header.Pid, m_Buffer.m_pBuffer + HEAD_PID, sizeof(uint32_t));
-            memcpy(&header.RWidth, m_Buffer.m_pBuffer + HEAD_RWIDTH, sizeof(uint32_t));
-            memcpy(&header.RHeight, m_Buffer.m_pBuffer + HEAD_RHEIGHT, sizeof(uint32_t));
-            memcpy(&header.VWidth, m_Buffer.m_pBuffer + HEAD_VWIDTH, sizeof(uint32_t));
-            memcpy(&header.VHeight, m_Buffer.m_pBuffer + HEAD_VHEIGHT, sizeof(uint32_t));
-            memcpy(&header.DOrientation, m_Buffer.m_pBuffer + HEAD_DORIENTATION, sizeof(unsigned char));
-            memcpy(&header.QBitflags, m_Buffer.m_pBuffer + HEAD_QBITFLAGS, sizeof(unsigned char));
+            memcpy_s(&header.Version, sizeof(header.Version), m_Buffer.m_pBuffer + HEAD_VERSION, sizeof(unsigned char));
+            memcpy_s(&header.SizeHeader, sizeof(header.SizeHeader), m_Buffer.m_pBuffer + HEAD_SIZEHEADER, sizeof(unsigned char));
+            memcpy_s(&header.Pid, sizeof(header.Pid), m_Buffer.m_pBuffer + HEAD_PID, sizeof(uint32_t));
+            memcpy_s(&header.RWidth, sizeof(header.RWidth), m_Buffer.m_pBuffer + HEAD_RWIDTH, sizeof(uint32_t));
+            memcpy_s(&header.RHeight, sizeof(header.RHeight), m_Buffer.m_pBuffer + HEAD_RHEIGHT, sizeof(uint32_t));
+            memcpy_s(&header.VWidth, sizeof(header.VWidth), m_Buffer.m_pBuffer + HEAD_VWIDTH, sizeof(uint32_t));
+            memcpy_s(&header.VHeight, sizeof(header.VHeight), m_Buffer.m_pBuffer + HEAD_VHEIGHT, sizeof(uint32_t));
+            memcpy_s(&header.DOrientation, sizeof(header.DOrientation), m_Buffer.m_pBuffer + HEAD_DORIENTATION, sizeof(unsigned char));
+            memcpy_s(&header.QBitflags, sizeof(header.QBitflags), m_Buffer.m_pBuffer + HEAD_QBITFLAGS, sizeof(unsigned char));
             ui->textBrowser_info->append("Version =" + QString::number(header.Version, 10));
             ui->textBrowser_info->append("SizeHeader =" + QString::number(header.SizeHeader, 10));
             ui->textBrowser_info->append("Pid =" + QString::number(header.Pid, 10));
@@ -64,34 +66,14 @@ void showpic::unpackData(unsigned char * data, int nLen)
         }
         else
         {
-            // ************测试写文件**********
-            ofstream imgFo("Image22.jpg", ios::binary);
-            if (!imgFo)
-            {
-                QMessageBox::information(NULL, "title", "Image2.jpg write error");
-            }
-            imgFo.write((char*)data, nLen);
-            imgFo.close();
-            // ************测试写文件**********
-
             //不够包头，不处理
             if (totalLen < headLen)
             {
                 break;
             }
 
-            // ************测试写文件**********
-            ofstream imgFooo("Image222.jpg", ios::binary);
-            if (!imgFooo)
-            {
-                QMessageBox::information(NULL, "title", "Image2.jpg write error");
-            }
-            imgFooo.write((char*)data, nLen);
-            imgFooo.close();
-            // ************测试写文件**********
-
             Packet pack;                      //接收到的包
-            memcpy(&pack.head, m_Buffer.m_pBuffer, headLen);   //包头
+            memcpy_s(&pack.head, sizeof(pack.head), m_Buffer.m_pBuffer, headLen);   //包头
             int bodyLen = pack.head.nLen;     //包体大小
             int packLen = headLen + bodyLen;  //一包数据大小
             if (totalLen < packLen)            //不够一包数据，等够了再解析
@@ -99,20 +81,9 @@ void showpic::unpackData(unsigned char * data, int nLen)
                 break;
             }
 
-            // ************测试写文件**********
-            ofstream imgFoooo("Image2222.jpg", ios::binary);
-            if (!imgFoooo)
-            {
-                QMessageBox::information(NULL, "title", "Image2.jpg write error");
-            }
-            imgFoooo.write((char*)data, nLen);
-            imgFoooo.close();
-            // ************测试写文件**********
-
-
             //数据足够多
             pack.body = new unsigned char[bodyLen];
-            memcpy(pack.body, m_Buffer.m_pBuffer + headLen, bodyLen);  //包体
+            memcpy_s(pack.body, bodyLen, m_Buffer.m_pBuffer + headLen, bodyLen);  //包体
             //recv(pack.body);         //处理得到的包体
 
             // 显示图片
@@ -130,6 +101,114 @@ void showpic::unpackData(unsigned char * data, int nLen)
         }
     }
 }
+
+//void showpic::unpackData(std::string &data, int nLen)
+//{
+//    //char *changedata = const_cast<char *>(data.c_str());
+//    m_Buffer.addMsg(const_cast<char *>(data.c_str()), nLen);     //添加数据到缓冲区
+//    int totalLen = m_Buffer.getDataLen();  //缓冲区中数据大小
+//    int headLen = sizeof(PacketHead);         //包头大小
+//    while (totalLen > 0)
+//    {
+//        if (HEADINFO_ONCE_FLAG_MAIN)
+//        {
+//            uint32_t firsthheadlen = sizeof(FirstHeader);
+//            if (totalLen < firsthheadlen)
+//            {
+//                QMessageBox::information(NULL, "title", "totalLen<firsthheadlen");
+//                break;
+//            }
+//            memcpy(&header.Version, m_Buffer.m_pBuffer + HEAD_VERSION, sizeof(unsigned char));
+//            memcpy(&header.SizeHeader, m_Buffer.m_pBuffer + HEAD_SIZEHEADER, sizeof(unsigned char));
+//            memcpy(&header.Pid, m_Buffer.m_pBuffer + HEAD_PID, /*sizeof(uint32_t)*/4);
+//            memcpy(&header.RWidth, m_Buffer.m_pBuffer + HEAD_RWIDTH, sizeof(uint32_t));
+//            memcpy(&header.RHeight, m_Buffer.m_pBuffer + HEAD_RHEIGHT, sizeof(uint32_t));
+//            memcpy(&header.VWidth, m_Buffer.m_pBuffer + HEAD_VWIDTH, sizeof(uint32_t));
+//            memcpy(&header.VHeight, m_Buffer.m_pBuffer + HEAD_VHEIGHT, sizeof(uint32_t));
+//            memcpy(&header.DOrientation, m_Buffer.m_pBuffer + HEAD_DORIENTATION, sizeof(unsigned char));
+//            memcpy(&header.QBitflags, m_Buffer.m_pBuffer + HEAD_QBITFLAGS, sizeof(unsigned char));
+//            ui->textBrowser_info->append("Version =" + QString::number(header.Version, 10));
+//            ui->textBrowser_info->append("SizeHeader =" + QString::number(header.SizeHeader, 10));
+//            ui->textBrowser_info->append("Pid =" + QString::number(header.Pid, 10));
+//            ui->textBrowser_info->append("RWidth =" + QString::number(header.RWidth, 10));
+//            ui->textBrowser_info->append("RHeight =" + QString::number(header.RHeight, 10));
+//            ui->textBrowser_info->append("VWidth =" + QString::number(header.VWidth, 10));
+//            ui->textBrowser_info->append("VHeight =" + QString::number(header.VHeight, 10));
+//            ui->textBrowser_info->append("DOrientation =" + QString::number(header.DOrientation, 10));
+//            ui->textBrowser_info->append("QBitflags =" + QString::number(header.QBitflags, 10));
+//
+//            m_Buffer.deleteFirst(firsthheadlen);
+//            totalLen -= (firsthheadlen);
+//            HEADINFO_ONCE_FLAG_MAIN = false;
+//        }
+//        else
+//        {
+//            //不够包头，不处理
+//            if (totalLen < headLen)
+//            {
+//                break;
+//            }
+//
+//            Packet pack;                      //接收到的包
+//            memcpy(&pack.head, m_Buffer.m_pBuffer, headLen);   //包头
+//            int bodyLen = pack.head.nLen;     //包体大小
+//            int packLen = headLen + bodyLen;  //一包数据大小
+//            if (totalLen < packLen)            //不够一包数据，等够了再解析
+//            {
+//                break;
+//            }
+//
+//            //数据足够多
+//            pack.body = new unsigned char[bodyLen];
+//            memcpy(pack.body, m_Buffer.m_pBuffer + headLen, bodyLen);  //包体
+//            //recv(pack.body);         //处理得到的包体
+//
+//            // 显示图片
+//            QImage Image;
+//            Image.loadFromData(reinterpret_cast<unsigned char*>(pack.body), bodyLen);
+//            QPixmap pixmap = QPixmap::fromImage(Image);
+//            int with = ui->label_image_show->width();
+//            int height = ui->label_image_show->height();
+//            //QPixmap fitpixmap = pixmap.scaled(with, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);  // 饱满填充
+//            QPixmap fitpixmap = pixmap.scaled(with, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);  // 按比例缩放
+//            ui->label_image_show->setPixmap(fitpixmap);
+//
+//            m_Buffer.deleteFirst(packLen);  //移除缓冲区中第一个数据包
+//            totalLen -= (packLen);
+//        }
+//    }
+//}
+//void showpic::readClient()
+//{
+//    if (visualTcpSocket->bytesAvailable() > 0)
+//    {
+//        QByteArray readdata = visualTcpSocket->readAll();
+//        if (readdata.size() == 0)
+//        {
+//            QMessageBox::information(NULL, "title", "readdata.size() == 0");
+//        }
+//        char *buf = readdata.data();
+//        //std::string changebuf = buf;
+//        //unpackData((std::string)buf, readdata.size());
+//
+//    }
+//}
+
+
+void showpic::readClient()
+{
+    if (visualTcpSocket->bytesAvailable() > 0)
+    {
+        QByteArray readdata = visualTcpSocket->readAll();
+        if (readdata.size() == 0)
+        {
+            QMessageBox::information(NULL, "title", "readdata.size() == 0");
+        }
+        unsigned char *buf = (unsigned char*)readdata.data();
+        unpackData(buf, readdata.size());
+    }
+}
+
 // 连接minicap服务器 解析
 void showpic::on_pushButton_connect_clicked()
 {
@@ -144,31 +223,6 @@ void showpic::on_pushButton_connect_clicked()
 
     ui->label_image_show->setText("connect device please wait");
 
-}
-
-void showpic::readClient()
-{
-    if (visualTcpSocket->bytesAvailable() > 0)
-    {
-        QByteArray readdata = visualTcpSocket->readAll();
-        if (readdata.size() == 0)
-        {
-            QMessageBox::information(NULL, "title", "readdata.size() == 0");
-        }
-        unsigned char *buf = (unsigned char*)readdata.data();
-
-        // ************测试写文件**********
-        ofstream imgFo("Image2.jpg", ios::binary);
-        if (!imgFo)
-        {
-            QMessageBox::information(NULL, "title", "Image2.jpg write error");
-        }
-        imgFo.write((char*)buf, readdata.size());
-        imgFo.close();
-        // ************测试写文件**********
-
-        unpackData(buf, readdata.size());
-    }
 }
 
 void showpic::onConnected()
@@ -204,6 +258,33 @@ void showpic::on_pushButton_startsever_clicked()
     abiversion = abiversion.trimmed();
     ui->textBrowser_server->append("ABI =" + abiversion); // arm64-v8a
 
+    // 获取设备的分辨率
+    p.start("adb shell wm size");
+    p.waitForStarted();
+    p.waitForFinished();
+    QString wmsize = QString::fromLocal8Bit(p.readAllStandardOutput());
+    wmsize = wmsize.trimmed();
+    ui->textBrowser_server->append(wmsize);
+    string realwmsizeflag = wmsize.toStdString();
+    QString realwmsize = QString::fromStdString(
+        realwmsizeflag.substr(realwmsizeflag.find(":") + 1)).trimmed(); // 720x1440
+
+    //设置虚拟尺寸为分辨率的一半
+    int vwmsizeh;
+    int vwmsizew;
+    QString vwmsize;
+    string vwmsizeswap = realwmsize.toStdString();
+    if (vwmsizeswap.find("x") == vwmsizeswap.npos) {
+        QMessageBox::information(NULL, "title", "cant find realsize - x");
+        vwmsize = realwmsize;
+    }
+    else {
+        vwmsizeh = std::stoi(vwmsizeswap.substr(vwmsizeswap.find("x") + 1)) / 2;
+        vwmsizew = std::stoi(vwmsizeswap.erase(vwmsizeswap.find("x"))) / 2;
+        vwmsize = QString::fromStdString(
+            std::to_string(vwmsizew) + "x" + std::to_string(vwmsizeh)).trimmed();
+    }
+
     // 获取程序所在路径+stf_lib https://blog.csdn.net/liyuanbhu/article/details/53710249
     QString exepath = QCoreApplication::applicationDirPath();
     QString minicapso = exepath + "/stf_libs/minicap-shared/aosp/libs";
@@ -223,7 +304,6 @@ void showpic::on_pushButton_startsever_clicked()
         if (sdkversion.compare(sofileInfo->at(i).fileName()) == 0)
         {
             // push minicap.so
-            //ui->textBrowser_server->append("adb push " + minicapso + "/" + sdkversion + "/" + abiversion + "/minicap.so" + " data/local/tmp");
             p.start("adb push " + minicapso + "/" + sdkversion + "/" + abiversion + "/minicap.so" + " data/local/tmp");
             p.waitForStarted();
             p.waitForFinished();
@@ -244,7 +324,6 @@ void showpic::on_pushButton_startsever_clicked()
         if (abiversion.compare(exefileInfo->at(i).fileName()) == 0)
         {
             // push minicap
-            //ui->textBrowser_server->append("adb push " + minicap + "/" + abiversion + "/minicap" + " data/local/tmp");
             p.start("adb push " + minicap + "/" + abiversion + "/minicap" + " data/local/tmp");
             p.waitForStarted();
             p.waitForFinished();
@@ -265,13 +344,12 @@ void showpic::on_pushButton_startsever_clicked()
     servercmd = new QProcess(this);
     connect(servercmd, SIGNAL(readyReadStandardOutput()), this, SLOT(on_readoutput()));
     connect(servercmd, SIGNAL(readyReadStandardError()), this, SLOT(on_readerror()));
-    servercmd->start("adb shell LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P 720x1440@720x1440/0"); // 启动指令
+    servercmd->start("adb shell LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P " + realwmsize + "@" + vwmsize + "/0"); // 启动指令
     servercmd->waitForStarted();
 }
 // cmd输出行
 void showpic::on_readoutput()
 {
-    QMessageBox::information(NULL, "title", "???");
     ui->textBrowser_server->append(QString::fromLocal8Bit(servercmd->readAllStandardOutput().data()));
 }
 // cmd失败输出行
