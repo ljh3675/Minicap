@@ -187,7 +187,6 @@
     </QtUic>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="databuffer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="showpic.cpp" />
   </ItemGroup>
@@ -212,7 +211,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">release\moc_predefs.h;%(Outputs)</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </CustomBuild>
-    <ClInclude Include="databuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="showpic.ui">

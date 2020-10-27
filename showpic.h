@@ -2,9 +2,10 @@
 #define SHOWPIC_H
 
 #include <QMainWindow>
-#include <databuffer.h>
 #include <QtNetwork/QtNetwork>
 #include <QTextBrowser>
+
+#define BUFFER_SIZE  1024  //初始缓冲区大小
 
 // 头信息宏定义
 #define HEAD_VERSION              0
@@ -60,11 +61,20 @@ public:
     ~showpic();
 
 public:
-    void unpackData(unsigned char *data, int nLen);
-    //void unpackData(std::string &data, int nLen);
+    void unpackData(std::string &packdata, int nLen);
+
+// 缓冲区部分
+public:
+    char *m_pBuffer;    //缓冲区
+    int m_nBufferSize;  //缓冲区大小
+    int m_nOffset;      //缓冲区中当前数据大小
+    int getDataLen();         //获得缓冲区中数据大小
+    bool reBufferSize(int nLen); //调整缓冲区大小
+    bool addMsg(std::string &pBuf, int nLen);  //添加消息到缓冲区
+    void reset();          //缓冲区复位
+    void deleteFirst(int nLen);   //移除缓冲区首部的第一个数据包
 
 private slots:
-
     void on_pushButton_startsever_clicked();
     void on_pushButton_connect_clicked();
     void on_readoutput();
@@ -75,7 +85,7 @@ private slots:
 private:
     Ui::showpic *ui;
     QTcpSocket *visualTcpSocket; // 通信套接字
-    DataBuffer m_Buffer; // 套接字关联的缓冲区
+    //showpic m_Buffer; // 套接字关联的缓冲区
     QProcess *servercmd = nullptr;
     FirstHeader header;
 };
